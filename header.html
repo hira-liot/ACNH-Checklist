@@ -1,0 +1,50 @@
+<header class="site-header">
+  <div class="container">
+    <h1>K.K. Slider Songs Checklist</h1>
+    <nav class="site-nav">
+      <a href="kkSongs.html">Songs</a>
+      <a href="test.html">Test Page</a>
+      <a href="#" onclick="window.location.reload(); return false;">Refresh</a>
+    </nav>
+  </div>
+</header>
+
+<style>
+  .site-header {
+    background: #2e7d32;
+    border-bottom: 2px solid #1b5e20;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  }
+  .site-header .container {
+    max-width: 800px;
+    margin: 0 auto;
+    padding: 16px 20px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 16px;
+  }
+  .site-header h1 {
+    font-size: 1.25rem;
+    margin: 0;
+    color: white;
+    font-weight: 600;
+  }
+  .site-nav a {
+    margin-left: 16px;
+    color: rgba(255, 255, 255, 0.9);
+    text-decoration: none;
+    font-weight: 500;
+    transition: color 0.2s ease;
+  }
+  .site-nav a:hover {
+    color: white;
+    text-decoration: underline;
+  }
+
+  /* Night variant - optional but keeps consistency with themed pages */
+  body.theme-night .site-header {
+    background: #1b1b1b;
+    border-bottom-color: #333;
+  }
+</style>

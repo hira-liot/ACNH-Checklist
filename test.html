@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Test Page</title>
+    <style>
+      body {
+        margin: 0;
+        padding: 0;
+        background-color: #f0f4f8;
+        font-family: Arial, sans-serif;
+      }
+      .content {
+        max-width: 800px;
+        margin: 20px auto;
+        padding: 20px;
+      }
+      p {
+        line-height: 1.6;
+        color: #333;
+      }
+    </style>
+  </head>
+  <body>
+    <!-- This div will be populated by headerLoader.js -->
+    <div id="siteHeader" data-src="header.html"></div>
+    <script src="headerLoader.js"></script>
+
+    <div class="content">
+      <h2>Test Page</h2>
+      <p>
+        This is a test page showing how the reusable header works with a solid background color.
+      </p>
+      <p>The header is loaded from header.html and inserted at the top of the page.</p>
+    </div>
+  </body>
+</html>

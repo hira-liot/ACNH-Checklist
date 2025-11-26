@@ -1,0 +1,271 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>K.K. Slider Songs Checklist (ACNH)</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+            background-color: #e8f5e9;
+            background-size: cover;
+            background-position: center;
+            background-repeat: no-repeat;
+            background-attachment: fixed; /* keep wallpaper static while content scrolls */
+            transition: background-image 0.6s ease-in-out, background-color 0.3s ease-in-out;
+        }
+        h1 {
+            color: #1b5e20;
+            text-align: center;
+        }
+        .song-list {
+            display: grid;
+            /* force five items per row */
+            grid-template-columns: repeat(5, 1fr);
+            gap: 12px;
+        }
+        .song-item {
+            background-color: white;
+            padding: 10px;
+            border-radius: 5px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+        .song-item.checked {
+            background-color: #dcedc8; /* light green when checked */
+            box-shadow: 0 2px 6px rgba(0,0,0,0.12);
+            border-left: 4px solid #8bc34a;
+        }
+        /* Theme-specific variations: day vs night */
+        .theme-day .song-item {
+            background-color: rgba(255,255,255,0.92);
+            color: #111;
+            box-shadow: 0 2px 6px rgba(0,0,0,0.08);
+        }
+        .theme-day .song-item.checked {
+            background-color: #dcedc8;
+            border-left-color: #8bc34a;
+        }
+        .theme-day .counter { color: #2e7d32; }
+
+        .theme-night .song-item {
+            background-color: rgba(0,0,0,0.48);
+            color: #f3f3f3;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.4);
+        }
+        .theme-night .song-item.checked {
+            background-color: rgba(139,195,74,0.16); /* subtle green tint */
+            border-left-color: #cddc39;
+        }
+        .theme-night .counter { color: #cddc39; }
+        .counter {
+            text-align: center;
+            margin: 10px 0 16px 0;
+            font-weight: 700;
+            color: #2e7d32;
+            font-size: 1rem;
+        }
+        .song-item label {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            width: 100%;
+        }
+        .cover {
+            width: 96px;
+            height: 96px;
+            border-radius: 8px;
+            object-fit: cover;
+            flex: 0 0 96px;
+        }
+        .song-meta {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            width: 100%;
+            justify-content: space-between;
+        }
+        input[type="checkbox"] {
+            width: 20px;
+            height: 20px;
+        }
+    </style>
+</head>
+<body>
+    <div id="siteHeader" data-src="header.html"></div>
+    <script src="headerLoader.js"></script>
+    <div id="counter" class="counter"></div>
+    <div class="song-list" id="songList"></div>
+
+    <script>
+        // List of K.K. Slider songs
+        const kkSongs = [
+            "Agent K.K.", "Aloha K.K.", "Animal City", "Bubblegum K.K.", "Café K.K.",
+            "Chillwave", "Comrade K.K.", "DJ K.K.", "Drivin'", "Farewell", "Forest Life", "Go K.K. Rider",
+            "Hypno K.K.", "I Love You", "Imperial K.K.", "King K.K.", "K.K. Adventure", "K.K. Aria",
+            "K.K. Ballad", "K.K. Bashment", "K.K. Bazaar", "K.K. Birthday", "K.K. Blues", "K.K. Bossa",
+            "K.K. Break", "K.K. Calypso", "K.K. Casbah", "K.K. Chorale", "K.K. Chorinho", "K.K. Condor", "K.K. Country",
+            "K.K. Cruisin'", "K.K. D&B", "K.K. Dirge", "K.K. Disco", "K.K. Dixie",
+            "K.K. Dub", "K.K. Étude", "K.K. Faire", "K.K. Flamenco", "K.K. Folk", "K.K. Fugue", "K.K. Fusion",
+            "K.K. Groove", "K.K. Gumbo", "K.K. Hop", "K.K. House", "K.K. Island", "K.K. Jazz", "K.K. Jongara",
+            "K.K. Khoomei", "K.K. Lament", "K.K. Love Song", "K.K. Lovers", "K.K. Lullaby", "K.K. Mambo", "K.K. Marathon",
+            "K.K. March", "K.K. Mariachi", "K.K. Metal", "K.K. Milonga", "K.K. Moody",
+            "K.K. Oasis", "K.K. Parade", "K.K. Polka", "K.K. Ragtime", "K.K. Rally", "K.K. Reggae",
+            "K.K. Robot Synth", "K.K. Rock", "K.K. Rockabilly", "K.K. Safari", "K.K. Salsa", "K.K. Samba",
+            "K.K. Ska", "K.K. Slack-Key", "K.K. Sonata", "K.K. Song", "K.K. Soul", "K.K. Steppe",
+            "K.K. Stroll", "K.K. Swing", "K.K. Synth", "K.K. Tango", "K.K. Technopop",
+            "K.K. Waltz", "K.K. Western", "Lucky K.K.", "Marine Song 2001",
+            "Mountain Song", "Mr. K.K.", "My Place", "Neapolitan", "Only Me",
+            "Pondering", "Rockin' K.K.", "Soulful K.K.", "Space K.K.", "Spring Blossoms",
+            "Stale Cupcakes", "Steep Hill", "Surfin' K.K.", "The K. Funk", "To the Edge",
+            "Two Days Ago", "Wandering", "Welcome Horizons"
+        ]; 
+
+        // Small inline SVG placeholder (data URL) used when no local cover is found
+        const placeholderSVG = encodeURIComponent(`
+            <svg xmlns='http://www.w3.org/2000/svg' width='96' height='96' viewBox='0 0 24 24' fill='none' stroke='%23666' stroke-width='1' stroke-linecap='round' stroke-linejoin='round'>
+              <rect width='24' height='24' rx='4' ry='4' fill='%23f5f5f5' />
+              <path d='M9 18V5l11-2v13' />
+              <circle cx='6' cy='18' r='2' />
+            </svg>
+        `);
+        const placeholderDataUrl = `data:image/svg+xml;utf8,${placeholderSVG}`;
+
+        // --- Dynamic wallpaper (morning / night) ---
+        // With only two images, map one to morning/day and one to night.
+        const wallpaperImages = {
+            morning: 'img/1.jpg',
+            night: 'img/2.jpg'
+        };
+
+        function setWallpaper() {
+            const hour = new Date().getHours();
+            // define morning as 05:00 - 16:59, night as 17:00 - 04:59
+            const isMorning = hour >= 5 && hour < 17;
+
+            const imgUrl = isMorning ? wallpaperImages.morning : wallpaperImages.night;
+
+            // lighter overlay during day, darker overlay at night for readability
+            const overlay = isMorning ? 'rgba(255,255,255,0.66)' : 'rgba(0,0,0,0.45)';
+            document.body.style.backgroundImage = `linear-gradient(${overlay}, ${overlay}), url('${imgUrl}')`;
+
+            // apply theme class so containers and counter follow wallpaper
+            document.body.classList.toggle('theme-day', !!isMorning);
+            document.body.classList.toggle('theme-night', !isMorning);
+        }
+
+        // Set wallpaper on load and refresh every 15 minutes
+        setWallpaper();
+        setInterval(setWallpaper, 15 * 60 * 1000);
+
+        // Normalize song name to a base filename for local cover lookup
+        function normalizeName(name) {
+            return name.toLowerCase()
+                .replace(/\s+|\/+|\\+|\.+|\'+|\:+|\(|\)|\[|\]|\{|\}|,|\?|!|&|%|\$|@|#|\^|\*|"|<|>/g, '_')
+                .replace(/[^a-z0-9_]/g, '_')
+                .replace(/__+/g, '_')
+                .replace(/^_|_$/g, '');
+        }
+
+        // Try multiple extensions in order, falling back to the placeholder
+        function assignCover(img, baseName) {
+            const exts = ['png', 'jpg', 'jpeg', 'webp', 'gif', 'svg'];
+            let i = 0;
+            img.onerror = function () {
+                i++;
+                if (i < exts.length) {
+                    img.src = `covers/${baseName}.${exts[i]}`;
+                } else {
+                    img.onerror = null;
+                    img.src = placeholderDataUrl;
+                }
+            };
+            img.src = `covers/${baseName}.${exts[0]}`;
+        }
+
+            // Update the collected counter display (Collected: X / Y)
+            function updateCounter() {
+                const collected = document.querySelectorAll('input[name="song"]:checked').length;
+                const total = kkSongs.length;
+                const el = document.getElementById('counter');
+                if (el) el.textContent = `Collected: ${collected} / ${total}`;
+            }
+
+        // Function to create song items (with cover)
+        function createSongItem(songName) {
+            const div = document.createElement('div');
+            div.className = 'song-item';
+
+            // Cover image element
+            const img = document.createElement('img');
+            img.className = 'cover';
+            const base = normalizeName(songName);
+            assignCover(img, base);
+
+            // Label (checkbox + text)
+            const label = document.createElement('label');
+            const meta = document.createElement('div');
+            meta.className = 'song-meta';
+
+            const left = document.createElement('div');
+            left.style.display = 'flex';
+            left.style.alignItems = 'center';
+            left.style.gap = '10px';
+
+            const checkbox = document.createElement('input');
+            checkbox.type = 'checkbox';
+            checkbox.name = 'song';
+
+            const key = `kksong|${songName}`;
+            // restore checked state
+            checkbox.checked = localStorage.getItem(key) === 'true';
+            // apply class according to saved state
+            if (checkbox.checked) {
+                div.classList.add('checked');
+            } else {
+                div.classList.remove('checked');
+            }
+
+            // when user toggles checkbox, persist, toggle visual state and update counter
+            checkbox.addEventListener('change', () => {
+                localStorage.setItem(key, checkbox.checked);
+                if (checkbox.checked) {
+                    div.classList.add('checked');
+                } else {
+                    div.classList.remove('checked');
+                }
+                updateCounter();
+            });
+
+            // ensure counter reflects restored state
+            updateCounter();
+
+            const text = document.createElement('span');
+            text.textContent = songName;
+
+            left.appendChild(checkbox);
+            left.appendChild(text);
+            meta.appendChild(left);
+
+            // Optionally you can add right-side metadata later (duration, source, etc.)
+            label.appendChild(left);
+
+            div.appendChild(img);
+            div.appendChild(label);
+
+            return div;
+        }
+
+        // Render songs sorted alphabetically
+        const songList = document.getElementById('songList');
+        kkSongs.sort((a, b) => a.localeCompare(b)).forEach(song => {
+            songList.appendChild(createSongItem(song));
+        });
+
+        // ensure the counter reflects the initial state after rendering
+        updateCounter();
+    </script>
+</body>
+</html></div>
