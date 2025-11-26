@@ -2,6 +2,8 @@
   <div class="container">
     <h1>K.K. Slider Songs Checklist</h1>
     <nav class="site-nav">
+      <a href="indexaa.html">test</a>
+      <a href="index.html">Home</a>
       <a href="kkSongs.html">Songs</a>
       <a href="test.html">Test Page</a>
       <a href="#" onclick="window.location.reload(); return false;">Refresh</a>
@@ -10,19 +12,38 @@
 </header>
 
 <style>
+  :root {
+    --site-header-height: 64px;
+  }
+  body.has-fixed-header {
+    padding-top: var(--site-header-height);
+    max-width: 100% !important; /* override page-level max-width if present */
+  }
   .site-header {
     background: #2e7d32;
     border-bottom: 2px solid #1b5e20;
     box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    position: fixed !important; /* fixed so it spans the viewport */
+    top: 0;
+    left: 0 !important;
+    right: 0 !important;
+    z-index: 9999;
+    width: 100vw !important;
+    box-sizing: border-box; /* ensure full-width backgrounds behave predictably */
+    height: var(--site-header-height) !important;
+    min-height: var(--site-header-height);
+    display: flex;
+    align-items: center;
   }
   .site-header .container {
     max-width: 800px;
     margin: 0 auto;
-    padding: 16px 20px;
+    padding: 0 20px; /* vertical padding moved to header height via CSS var */
     display: flex;
     align-items: center;
     justify-content: space-between;
     gap: 16px;
+    height: 100%;
   }
   .site-header h1 {
     font-size: 1.25rem;
@@ -37,9 +58,24 @@
     font-weight: 500;
     transition: color 0.2s ease;
   }
+  /* keep site-nav visible and in a row even if page-level CSS is odd */
+  .site-nav {
+    display: flex;
+    gap: 8px;
+    align-items: center;
+  }
+  .site-nav a {
+    display: inline-block;
+  }
   .site-nav a:hover {
     color: white;
     text-decoration: underline;
+  }
+
+  /* Visual indicator for the active page link */
+  .site-nav a.active {
+    text-decoration: underline;
+    font-weight: 700;
   }
 
   /* Night variant - optional but keeps consistency with themed pages */

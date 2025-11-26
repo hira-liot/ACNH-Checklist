@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>ACNH Checklist — Home</title>
+    <style>
+      body {
+        margin: 0;
+        font-family: Arial, sans-serif;
+        background: #f6fff6;
+        color: #111;
+      }
+      .main {
+        max-width: 900px;
+        margin: 20px auto;
+        padding: 24px;
+      }
+      .hero {
+        background: white;
+        border-radius: 10px;
+        padding: 24px;
+        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
+      }
+      .hero h2 {
+        margin: 0 0 10px 0;
+        color: #1b5e20;
+      }
+      .hero p {
+        margin: 0 0 12px 0;
+        line-height: 1.5;
+      }
+      .links {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 10px;
+        margin-top: 8px;
+      }
+      .links a {
+        padding: 10px 14px;
+        background: #1b5e20;
+        color: white;
+        text-decoration: none;
+        border-radius: 6px;
+        display: inline-block;
+      }
+      .links a.secondary {
+        background: #efefef;
+        color: #111;
+        border: 1px solid #ddd;
+      }
+
+      .sections {
+        display: grid;
+        gap: 12px;
+        margin-top: 16px;
+      }
+      .card {
+        border-radius: 8px;
+        padding: 12px;
+        background: white;
+        box-shadow: 0 1px 4px rgba(0, 0, 0, 0.06);
+      }
+    </style>
+  </head>
+  <body>
+    <div id="siteHeader" data-src="header.html"></div>
+    <script src="headerLoader.js"></script>
+
+    <main class="main">
+      <section class="hero">
+        <h2>Welcome to ACNH Checklist</h2>
+        <p>
+          This site helps you track collection progress in Animal Crossing: New Horizons (ACNH). Use
+          the checklists to track K.K. Slider songs, fish, bugs, fossils, and other collectibles.
+        </p>
+        <div class="links">
+          <a href="kkSongs.html">K.K. Songs Checklist</a>
+          <a href="test.html" class="secondary">Test Page</a>
+        </div>
+      </section>
+
+      <section class="sections">
+        <article class="card">
+          <h3>How to use this checklist</h3>
+          <ul>
+            <li>Click on a checklist (e.g., K.K. Songs) to view items.</li>
+            <li>Use the search to quickly find items.</li>
+            <li>Filter status (collected / not collected) with the dropdown.</li>
+            <li>
+              Collected states persist using your browser's localStorage — nothing is uploaded.
+            </li>
+          </ul>
+        </article>
+        <article class="card">
+          <h3>Privacy & Data</h3>
+          <p>
+            This site stores only local data in your browser (cookies/localStorage) — nothing is
+            sent to a server.
+          </p>
+        </article>
+      </section>
+    </main>
+  </body>
+</html>

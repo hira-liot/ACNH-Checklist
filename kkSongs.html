@@ -7,15 +7,20 @@
     <style>
         body {
             font-family: Arial, sans-serif;
-            max-width: 800px;
-            margin: 0 auto;
-            padding: 20px;
+            margin: 0; /* full-viewport width - content max-width will live in .site */
+            padding: 0;
             background-color: #e8f5e9;
             background-size: cover;
             background-position: center;
             background-repeat: no-repeat;
             background-attachment: fixed; /* keep wallpaper static while content scrolls */
             transition: background-image 0.6s ease-in-out, background-color 0.3s ease-in-out;
+        }
+        /* default centered content wrapper */
+        .site {
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
         }
         h1 {
             color: #1b5e20;
@@ -96,8 +101,21 @@
 <body>
     <div id="siteHeader" data-src="header.html"></div>
     <script src="headerLoader.js"></script>
-    <div id="counter" class="counter"></div>
-    <div class="song-list" id="songList"></div>
+        <div class="site">
+            <div id="counter" class="counter"></div>
+    <!-- Search bar to filter K.K. Slider songs -->
+    <div style="display:flex; gap:10px; align-items: center; margin-bottom: 12px;">
+        <input id="songSearch" type="search" placeholder="Search songs..." aria-label="Search songs" style="flex:1; padding:8px; border-radius:6px; border:1px solid #ccc;" />
+        <select id="filterStatus" aria-label="Filter collected status" style="padding:8px 10px; border-radius:6px; border:1px solid #ccc;">
+            <option value="all">All</option>
+            <option value="collected">Collected</option>
+            <option value="uncollected">Not collected</option>
+        </select>
+        <button id="clearSearch" title="Clear search" style="padding:8px 12px; border-radius:6px; cursor:pointer;">Clear</button>
+    </div>
+            <div id="searchResults" style="margin-bottom:8px; color:#2e7d32; font-weight:600;"></div>
+            <div class="song-list" id="songList"></div>
+        </div>
 
     <script>
         // List of K.K. Slider songs
@@ -237,6 +255,10 @@
                     div.classList.remove('checked');
                 }
                 updateCounter();
+                // Reapply filters to reflect the new collected/uncollected state
+                // (grab the current search query so we don't lose text search)
+                const q = document.getElementById('songSearch')?.value || '';
+                filterSongs(q);
             });
 
             // ensure counter reflects restored state
@@ -250,10 +272,13 @@
             meta.appendChild(left);
 
             // Optionally you can add right-side metadata later (duration, source, etc.)
-            label.appendChild(left);
+                label.appendChild(left);
 
             div.appendChild(img);
             div.appendChild(label);
+
+            // store the name in a data attribute so filtering is cheap
+            div.dataset.songName = songName;
 
             return div;
         }
@@ -266,6 +291,66 @@
 
         // ensure the counter reflects the initial state after rendering
         updateCounter();
+
+        // --- Search/filter songs ---
+        const searchInput = document.getElementById('songSearch');
+        const clearBtn = document.getElementById('clearSearch');
+        const statusSelect = document.getElementById('filterStatus');
+        const searchResults = document.getElementById('searchResults');
+
+        function updateSearchResults() {
+            const items = songList.querySelectorAll('.song-item');
+            const total = items.length;
+            let visible = 0;
+            items.forEach(it => { if (it.style.display !== 'none') visible++; });
+            const status = statusSelect?.value || 'all';
+            const labelMap = { all: 'All', collected: 'Collected', uncollected: 'Not collected' };
+            const statusLabel = labelMap[status] || 'All';
+            if (visible === 0) {
+                searchResults.textContent = `No songs found — Filter: ${statusLabel}`;
+            } else {
+                searchResults.textContent = `Showing: ${visible} / ${total} songs — Filter: ${statusLabel}`;
+            }
+        }
+
+        // Filter against visible song names, case-insensitive
+        let searchTimer = null;
+        function filterSongs(query) {
+            const q = (query || '').trim().toLowerCase();
+            const status = statusSelect?.value || 'all';
+            const items = songList.querySelectorAll('.song-item');
+            items.forEach(it => {
+                const name = (it.dataset.songName || '').toLowerCase();
+                const matchesText = q === '' || name.includes(q);
+                // check collected status from the checkbox in the item
+                const checkbox = it.querySelector('input[type="checkbox"]');
+                const isCollected = !!(checkbox && checkbox.checked);
+                const matchesStatus = status === 'all' || (status === 'collected' && isCollected) || (status === 'uncollected' && !isCollected);
+                const matches = matchesText && matchesStatus;
+                it.style.display = matches ? '' : 'none';
+                it.setAttribute('aria-hidden', matches ? 'false' : 'true');
+            });
+            updateSearchResults();
+        }
+
+        searchInput.addEventListener('input', (e) => {
+            // a basic debounce to prevent too many DOM changes while typing
+            if (searchTimer) clearTimeout(searchTimer);
+            searchTimer = setTimeout(() => filterSongs(e.target.value), 120);
+        });
+        // Clear button behavior
+        clearBtn.addEventListener('click', () => { searchInput.value = ''; statusSelect.value = 'all'; filterSongs(''); searchInput.focus(); });
+
+        // Escape clears the input
+        searchInput.addEventListener('keydown', (e) => {
+            if (e.key === 'Escape') { searchInput.value = ''; filterSongs(''); }
+        });
+
+        // Ensure the filter is applied when the status select changes
+        statusSelect.addEventListener('change', () => filterSongs(searchInput.value));
+
+        // Initialize the search UI summary and apply the default filter
+        filterSongs('');
     </script>
 </body>
 </html></div>
